@@ -34,46 +34,40 @@ class sender():
         self.key_partitial = None
         print(f"\n\t-----  {self.name}  -----")
         while True:
-            print(f"Введите private key для {self.name}:")
-            self.private_key = input()
+            self.private_key = input(f"Введите private key для {self.name}: ")
             self.private_key = int(self.private_key)
             if self.private_key <= 0:
                 continue
 
-            print(f"Введите public key для {self.name}:")
-            self.public_key = input()
+            self.public_key = input(f"Введите public key для {self.name}:  ")
             self.public_key = int(self.public_key)
             if self.private_key <= 0:
                 continue
             break
 
     def create_partial_key(self):
-        print(f"\n{self.name}\nKey partial = ({Alice.public_key} ^ {self.private_key}) mod {Bob.public_key}")
+        print(f"\n{self.name} -- PUBLIC --\nKey partial = ({Alice.public_key} ^ {self.private_key}) mod {Bob.public_key}")
         self.key_partitial = (Alice.public_key ** self.private_key) % Bob.public_key
-        print(f"{self.name} Key partial = {self.key_partitial}")
+        print(f"Key partial = {self.key_partitial}")
 
     def send_partial_key(self):
         if self.name == "Alice":
             self.other_key_partitial = Bob.key_partitial
-            print(f"\nAlice ←-- {self.other_key_partitial} ←-- Bob")
+            print(f"Alice ←-- {self.other_key_partitial} ←-- Bob")
         elif self.name == "Bob":
             self.other_key_partitial = Alice.key_partitial
             print(f"Alice --→ {self.other_key_partitial} --→ Bob")
 
     def create_full_key(self):
-        print(f"\n{self.name}\nKey full = ({self.other_key_partitial} ^ {self.private_key}) mod {Bob.public_key}")
+        print(f"\n{self.name} -- PRIVATE --\nKey full = ({self.other_key_partitial} ^ {self.private_key}) mod {Bob.public_key}")
         self.key_full = (self.other_key_partitial ** self.private_key) % Bob.public_key
-        print(f"{self.name} Key full = {self.key_full}")
+        print(f"Key full = {self.key_full}")
 
     def send_message(self):
-        print(f"\nКлюч (сдвиг): {self.key_full} mod {len(Alphabet)} = {self.key_full%len(Alphabet)}")
-
-        # message = 'абвгдеёжзи'.lower()
-        print(f"Введите фразу, которую хотите зашифровать: ")
-        message = input().lower()
+        print(f"\n\n----------------------------------------------\n\n\nКлюч (сдвиг): {self.key_full} mod {len(Alphabet)} = {self.key_full%len(Alphabet)}")
+        message = input(f"Введите фразу, которую хотите зашифровать: ").lower()
 
         message = caesar_encryption1(self.key_full % len(Alphabet), message, Alphabet, 1)
-        print(message)
 
 if __name__ == '__main__':
     # str1 = send_message()
@@ -83,11 +77,12 @@ if __name__ == '__main__':
     print("       Hacker")
     Alice = sender('Alice')
     Bob = sender('Bob')
-    print(f"\nАлгоритмически мы согласились использовать\n{Alice.name}\tpublic key - в качестве основы\n{Bob.name}\t\tpublic key - в качестве расчета mod")
+    print(f"\n!!! Алгоритмически мы согласились использовать\n{Alice.name}\tpublic key - в качестве основы\n{Bob.name}\t\tpublic key - в качестве расчета mod")
     # Алгоритмически мы согласились использовать Bob pub key в качестве основы, а Alice pub key в качестве расчета %
     Alice.create_partial_key()
     Bob.create_partial_key()
 
+    print("\n-- PUBLIC BROADCAST --")
     Alice.send_partial_key()
     Bob.send_partial_key()
 
